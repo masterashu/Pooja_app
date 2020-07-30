@@ -43,7 +43,7 @@ class _BuyTokensState extends State<BuyTokens> {
 
   @override
   Widget build(BuildContext context) {
-    final mealsList = Provider.of<MealCardList>(context);
+    var mealsList = Provider.of<MealCardList>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -95,11 +95,10 @@ class _BuyTokensState extends State<BuyTokens> {
                 final formState = _formKey.currentState;
                 if (formState.validate()) {
                   formState.save();
-                  mealsList.addMealCard(MealCard());
-                  /*
-                  for (var i = 0; i < mealsList.getMealCard().length; i++) {
-                    print(mealsList.getMealCard()[i].day);
-                  }*/
+                  Provider.of<MealCardList>(context, listen: false)
+                      .addMealCard(MealCard());
+                  print(Provider.of<MealCardList>(context, listen: false)
+                      .toString());
                 }
               },
             ),
@@ -107,7 +106,7 @@ class _BuyTokensState extends State<BuyTokens> {
               child: ListView.builder(
                 itemCount: mealsList.getMealCard().length,
                 itemBuilder: (context, index) {
-                  return BuildMeals(index: index, mealList: mealsList, key: ObjectKey(index));
+                  return BuildMeals(index: index, key: ObjectKey(index));
                 },
               ),
             ),
@@ -120,9 +119,8 @@ class _BuyTokensState extends State<BuyTokens> {
 
 class BuildMeals extends StatefulWidget {
   final index;
-  final mealList;
 
-  BuildMeals({this.index, this.mealList, Key key}): super(key: key);
+  BuildMeals({this.index, Key key}) : super(key: key);
 
   @override
   _BuildMealsState createState() => _BuildMealsState();
@@ -137,7 +135,6 @@ class _BuildMealsState extends State<BuildMeals> {
     "Dashami - 26 Oct",
   ];
 
-  @override
   String value;
   bool isNonVeg;
   bool isGuest;
@@ -149,8 +146,9 @@ class _BuildMealsState extends State<BuildMeals> {
     isGuest = false;
   }
 
+  @override
   Widget build(BuildContext context) {
-    //final mealList = Provider.of<MealCardList>(context);
+    final mealList = Provider.of<MealCardList>(context);
     //var count = mealList.getMealCard()[widget.index].count;
 
     return Dismissible(
@@ -159,7 +157,7 @@ class _BuildMealsState extends State<BuildMeals> {
         // Not use it like here (it will not listen to changes)
         Provider.of<MealCardList>(context, listen: false)
             .removeMealCard(widget.index);
-      }, //widget.mealList.removeMealCard(widget.index),
+      },
       child: Container(
         margin: EdgeInsets.all(10.0),
         decoration: BoxDecoration(
@@ -186,7 +184,7 @@ class _BuildMealsState extends State<BuildMeals> {
               children: <Widget>[
                 Text("Choose a day:"),
                 DropdownButtonFormField(
-                  //value: value,
+                  value: mealList.getMealCard()[widget.index].day,
                   items: days.map((day) {
                     return DropdownMenuItem(
                       value: day,
@@ -194,13 +192,8 @@ class _BuildMealsState extends State<BuildMeals> {
                     );
                   }).toList(),
                   onChanged: (val) {
-                    widget.mealList.updateMealCard(widget.index, val);
-                    //widget.mealList.getMealCard()[widget.index].day = val;
-                    for (var i = 0;
-                        i < widget.mealList.getMealCard().length;
-                        i++)
-                      print(
-                          "${widget.mealList.getMealCard()[i].day}  ${widget.mealList.getMealCard()[i].if_veg}");
+                    Provider.of<MealCardList>(context, listen: false)
+                        .updateMealCard(widget.index, val);
                   },
                 ),
                 Row(
@@ -209,12 +202,12 @@ class _BuildMealsState extends State<BuildMeals> {
                     Switch(
                       value: isNonVeg,
                       onChanged: (val) {
-                        //print(val);
                         setState(() {
                           isNonVeg = val;
                         });
-                        widget.mealList.getMealCard()[widget.index].if_veg =
-                            val;
+                        // Provider.of<MealCardList>(context)
+                        //     .getMealCard()[widget.index]
+                        //     .if_veg = val;
                       },
                       activeTrackColor: Colors.redAccent,
                       activeColor: Colors.white,
@@ -243,8 +236,9 @@ class _BuildMealsState extends State<BuildMeals> {
                         setState(() {
                           isGuest = val;
                         });
-                        widget.mealList.getMealCard()[widget.index].if_guest =
-                            val;
+                        // Provider.of<MealCardList>(context)
+                        //     .getMealCard()[widget.index]
+                        //     .if_guest = val;
                       },
                       activeTrackColor: Colors.greenAccent,
                       activeColor: Colors.white,
