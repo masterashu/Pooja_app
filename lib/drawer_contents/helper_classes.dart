@@ -5,8 +5,8 @@ class MealCard {
   String day;
   int count;
   int time;
-  int if_veg;
-  int if_guest;
+  bool if_veg;
+  bool if_guest;
   MealCard({this.day, this.count, this.time, this.if_guest, this.if_veg});
 }
 
@@ -30,8 +30,8 @@ class MealCardList extends ChangeNotifier {
     //print(day);
     //print(index);
     mealCards[index].day = day;
+    print(mealCards[index].day);
     notifyListeners();
-    for(var i=0;i<mealCards.length;i++)
-      print(mealCards[index].day);
   }
+
 }
